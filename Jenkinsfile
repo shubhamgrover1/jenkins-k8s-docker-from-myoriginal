@@ -8,14 +8,14 @@ pipeline {
     stages {
         stage('Checkout Source') {
             steps {
-                git branch: 'main', url: 'https://github.com/scaler-bhavya/jenkins-k8s-docker.git'
+                git branch: 'main', url: 'https://github.com/16shubhamgrover/jenkins-k8s-docker.git'
             }
         }
 
         stage('Build Image') {
             steps {
                 script {
-                    sh 'docker build -t bhavyascaler/react-app:latest .'
+                    sh 'docker build -t shubhamgrover1/react-app:latest .'
                 }
             }
         }
@@ -31,26 +31,18 @@ pipeline {
 
         stage('Push') {
             steps {
-                sh 'docker push bhavyascaler/react-app:latest'
+                sh 'docker push shubhamgrover1/react-app:latest'
             }
         }
 
-        stage("Deploy to EKS") {
+        stage("Deploy to kind") {
             steps {
                 script {
-                    withCredentials([
-                        [$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-credentials', 
-                         accessKeyVariable: 'AWS_ACCESS_KEY_ID', 
-                         secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'],
-        
-                    ]) {
-                        sh """
-                          echo "Updating kubeconfig..."
-                          aws eks update-kubeconfig --name amcdemo --region ${AWS_DEFAULT_REGION}
-                          kubectl apply -f deployment.yaml
-                          kubectl apply -f service.yaml
-                        """
-                    }
+                    sh """
+                      echo "Using kind's kubeconfig..."
+                      kubectl apply -f deployment.yaml
+                      kubectl apply -f service.yaml
+                    """
                 }
             }
         }
