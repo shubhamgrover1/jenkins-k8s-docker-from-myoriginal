@@ -23,6 +23,7 @@ pipeline {
                 }
             }
         }
+
         stage('Login') {
             steps {
                 script {
@@ -39,13 +40,11 @@ pipeline {
             }
         }
 
-        stage("Deploy to kind") {
+        stage('Deploy to ECS') {
             steps {
                 script {
                     sh """
-                      echo "Using kind's kubeconfig..."
-                      kubectl apply -f deployment.yaml
-                      kubectl apply -f service.yaml
+                        aws ecs update-service --cluster your-cluster-name --service your-service-name --force-new-deployment
                     """
                 }
             }
